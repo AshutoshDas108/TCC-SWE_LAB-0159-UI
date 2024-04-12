@@ -15,6 +15,7 @@ function Consignments() {
     volume: "",
   });
 
+  
   useEffect(() => {
     fetchConsignments();
   }, []);
@@ -22,9 +23,9 @@ function Consignments() {
   const fetchConsignments = async () => {
     try {
       const jwtToken = localStorage.getItem("jwt");
-      if(jwtToken == null) {
-        alert('PLEASE SIGN IN')
-     }
+      if (jwtToken == null) {
+        alert("PLEASE SIGN IN");
+      }
       const response = await fetch("http://localhost:8070/api/consignments", {
         method: "GET",
         headers: {
@@ -83,10 +84,16 @@ function Consignments() {
 
   return (
     <div>
-      <h2 className='text-3xl text-center bg-slate-700 p-4 font-bold text-white'>List Of Consignments</h2>
+      <h2 className="text-3xl text-center bg-slate-700 p-4 font-bold text-white">
+        List Of Consignments
+      </h2>
       <div className="flex flex-wrap justify-center bg-gradient-to-r from-white to-blue-600 shadow-xl">
         {consignments.map((consignment, index) => (
-          <ConsignmentCard key={index} consignment={consignment}  fetchConsignments={fetchConsignments}/>
+          <ConsignmentCard
+            key={index}
+            consignment={consignment}
+            fetchConsignments={fetchConsignments}
+          />
         ))}
       </div>
 
