@@ -56,11 +56,11 @@ const EmployeeDetail = () => {
 
   return (
     <div className="flex items-center justify-center h-full bg-gradient-to-r from-blue-50 to-blue-600 shadow-xl ">
-    <div className="max-w-md w-full bg-gradient-to-r from-blue-50 to-blue-600 shadow-xl rounded-lg overflow-hidden">
+    <div className="max-w-md w-full bg-gradient-to-r from-blue-50 to-blue-600 shadow-xl rounded-lg overflow-hidden mt-3 mb-3">
       <h1 className="text-center text-2xl bg-slate-700 text-white py-4">
         Employee Details
       </h1>
-      <div className="bg-white items-center shadow-md rounded-lg p-4 mb-4">
+      <div className="bg-gradient-to-r from-white to-blue-200 items-center shadow-md rounded-lg p-4">
         <div className="font-bold text-2xl mb-2 text-red-600 text-center">
           {employee.empName}
         </div>

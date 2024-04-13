@@ -1,4 +1,6 @@
+
 import React from 'react'
+
 import { Link } from 'react-router-dom'
 
 function Home() {
@@ -14,7 +16,7 @@ function Home() {
                     <div className="max-w-xl sm:mt-1 mt-60 space-y-4 text-center sm:text-right sm:ml-auto">
 
                         <h6 className="text-3xl font-bold sm:text-3xl p-2 text-black">
-                           Welcome To Our Page !!
+                           Welcome To Our Page !! 
                         </h6>
 
                         <Link

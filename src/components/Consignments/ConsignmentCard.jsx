@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+import { FaTruck, FaBuilding, FaMapMarkerAlt, FaBox } from "react-icons/fa";
+import { BiCube } from "react-icons/bi";
+import { MdOutlineLocalShipping, MdOutlineBusinessCenter } from "react-icons/md";
+import { IoIosCheckmarkCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 
 function ConsignmentCard({ consignment, fetchConsignments }) {
   const [showAssignOfficePopup, setShowAssignOfficePopup] = useState(false);
@@ -101,117 +105,173 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
   };
 
   return (
-    <>
-      <div className="max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 m-4">
-        {/* Existing card content */}
-        <div className="max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 m-4">
-          <div className="p-5">
-            <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-              {consignment.senderName}
-            </h5>
-            <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
-              Sender Address: {consignment.senderAddress}
-            </p>
-            <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-              {consignment.receiverName}
-            </h5>
-            <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
-              Receiver Address: {consignment.receiverAddress}
-            </p>
-            <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
-              Distance: {consignment.distanceBwSenderReceiver} km
-            </p>
-            <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
-              Volume: {consignment.volume} cubic meters
-            </p>
-            <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
-              Assigned Truck ID:{" "}
-              {consignment.truck == null ? "N/A" : consignment.truck.truckId}
-            </p>
-            <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
-              Assigned Office ID:{" "}
-              {consignment.branchOffice == null
-                ? "N/A"
-                : consignment.branchOffice.branchId}
-            </p>
-            <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
-              Delivery Status:{" "}
-              {deliveryStatus == true ? (
-                <button
-                  onClick={handleDeliveryStatus}
-                  className="text-green-600 font-bold"
-                >
-                  Deliverd
-                </button>
-              ) : (
-                <button
-                  onClick={handleDeliveryStatus}
-                  className="text-red-600 font-bold"
-                >
-                  Not Deliverd
-                </button>
-              )}
-            </p>
-          </div>
-        </div>
 
-        <div className="flex justify-between">
-          {consignment.truck == null && (
-            <button
-              onClick={handleAssignTruck}
-              className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Assign Truck
-            </button>
+    <div className="max-w-sm bg-gradient-to-r from-white to-blue-200 shadow-xl  rounded-lg border border-gray-300 p-5 m-4 hover:shadow-xl transition-shadow duration-300">
+      <div>
+        <h5 className="text-2xl font-bold text-gray-900 mb-2">
+          {consignment.senderName}
+          <FaMapMarkerAlt className="inline-block ml-2" />
+        </h5>
+        <p className="text-gray-600 flex items-center">
+          <FaBuilding className="mr-2" /> {consignment.senderAddress}
+        </p>
+        <p className="text-gray-600 flex items-center mt-2">
+          <FaTruck className="mr-2" /> {consignment.receiverName}
+        </p>
+        <p className="text-gray-600 flex items-center">
+          <FaMapMarkerAlt className="mr-2" /> {consignment.receiverAddress}
+        </p>
+        <p className="text-gray-600 flex items-center mt-2">
+          <BiCube className="mr-2" /> {consignment.distanceBwSenderReceiver} km
+        </p>
+        <p className="text-gray-600 flex items-center">
+          <MdOutlineLocalShipping className="mr-2" /> Volume: {consignment.volume} m³
+        </p>
+        <p className="text-gray-600 flex items-center">
+          <MdOutlineBusinessCenter className="mr-2" /> Truck ID: {consignment.truck ? consignment.truck.truckId : "N/A"}
+        </p>
+        <p className="text-gray-600 flex items-center">
+          <FaBuilding className="mr-2" /> Office ID: {consignment.branchOffice ? consignment.branchOffice.branchId : "N/A"}
+        </p>
+        <p className="flex items-center mt-4">
+          Delivery Status: 
+          {deliveryStatus ? (
+            <IoIosCheckmarkCircleOutline className="ml-2 text-green-500" size="1.5em" />
+          ) : (
+            <IoIosCloseCircleOutline className="ml-2 text-red-500" size="1.5em" />
           )}
-
-          {consignment.branchOffice == null && (
-            <>
-              <button
-                onClick={() => setShowAssignOfficePopup(true)}
-                className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Assign Office
-              </button>
-
-              {showAssignOfficePopup && (
-                <div
-                  className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
-                  id="my-modal"
-                >
-                  <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                    <h3 className="text-lg font-bold text-gray-900">
-                      Assign Office
-                    </h3>
-                    <input
-                      type="text"
-                      placeholder="Branch ID"
-                      value={branchId}
-                      onChange={(e) => setBranchId(e.target.value)}
-                      className="mt-2 mb-4 p-2 w-full border rounded"
-                    />
-                    <div className="flex justify-end space-x-4">
-                      <button
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={() => setShowAssignOfficePopup(false)}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={handleAssignOffice}
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </div>
+        </p>
       </div>
-    </>
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={handleDeliveryStatus}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors duration-200"
+        >
+          Update Status
+        </button>
+       {consignment.branchOffice == null && <button
+          onClick={() => setShowAssignOfficePopup(true)}
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors duration-200"
+        >
+          Assign Office
+        </button> }
+      </div>
+    </div>
+
+
+
+
+    // <>
+    //   <div className="max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 m-4">
+    //     {/* Existing card content */}
+    //     <div className="max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 m-4">
+    //       <div className="p-5">
+    //         <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+    //           {consignment.senderName}
+    //         </h5>
+    //         <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
+    //           Sender Address: {consignment.senderAddress}
+    //         </p>
+    //         <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+    //           {consignment.receiverName}
+    //         </h5>
+    //         <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
+    //           Receiver Address: {consignment.receiverAddress}
+    //         </p>
+    //         <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
+    //           Distance: {consignment.distanceBwSenderReceiver} km
+    //         </p>
+    //         <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
+    //           Volume: {consignment.volume} cubic meters
+    //         </p>
+    //         <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
+    //           Assigned Truck ID:{" "}
+    //           {consignment.truck == null ? "N/A" : consignment.truck.truckId}
+    //         </p>
+    //         <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
+    //           Assigned Office ID:{" "}
+    //           {consignment.branchOffice == null
+    //             ? "N/A"
+    //             : consignment.branchOffice.branchId}
+    //         </p>
+    //         <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
+    //           Delivery Status:{" "}
+    //           {deliveryStatus == true ? (
+    //             <button
+    //               onClick={handleDeliveryStatus}
+    //               className="text-green-600 font-bold"
+    //             >
+    //               Deliverd
+    //             </button>
+    //           ) : (
+    //             <button
+    //               onClick={handleDeliveryStatus}
+    //               className="text-red-600 font-bold"
+    //             >
+    //               Not Deliverd
+    //             </button>
+    //           )}
+    //         </p>
+    //       </div>
+    //     </div>
+
+    //     <div className="flex justify-between">
+    //       {consignment.truck == null && (
+    //         <button
+    //           onClick={handleAssignTruck}
+    //           className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    //         >
+    //           Assign Truck
+    //         </button>
+    //       )}
+
+    //       {consignment.branchOffice == null && (
+    //         <>
+    //           <button
+    //             onClick={() => setShowAssignOfficePopup(true)}
+    //             className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+    //           >
+    //             Assign Office
+    //           </button>
+
+    //           {showAssignOfficePopup && (
+    //             <div
+    //               className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+    //               id="my-modal"
+    //             >
+    //               <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    //                 <h3 className="text-lg font-bold text-gray-900">
+    //                   Assign Office
+    //                 </h3>
+    //                 <input
+    //                   type="text"
+    //                   placeholder="Branch ID"
+    //                   value={branchId}
+    //                   onChange={(e) => setBranchId(e.target.value)}
+    //                   className="mt-2 mb-4 p-2 w-full border rounded"
+    //                 />
+    //                 <div className="flex justify-end space-x-4">
+    //                   <button
+    //                     className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+    //                     onClick={() => setShowAssignOfficePopup(false)}
+    //                   >
+    //                     Cancel
+    //                   </button>
+    //                   <button
+    //                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    //                     onClick={handleAssignOffice}
+    //                   >
+    //                     Save
+    //                   </button>
+    //                 </div>
+    //               </div>
+    //             </div>
+    //           )}
+    //         </>
+    //       )}
+    //     </div>
+    //   </div>
+    // </>
   );
 }
 

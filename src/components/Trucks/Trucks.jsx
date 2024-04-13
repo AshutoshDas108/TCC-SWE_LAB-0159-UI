@@ -76,9 +76,9 @@ const handleInputChange = (e) => {
  return (
   <>
   <h2 className='text-3xl text-center bg-slate-700 p-4 font-bold text-white'>List Of Trucks</h2>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-white">
       {trucks.map(truck => (
-        <div key={truck.truckId} className="bg-white rounded-lg overflow-hidden shadow-md">
+        <div key={truck.truckId} className="hover:text-red-600 bg-gradient-to-r from-white to-blue-200 shadow-xl rounded-lg overflow-hidden">
           <div className="px-6 py-4">
           <Link to={`/trucks/${truck.truckId}`}>
             <div className="font-bold text-xl mb-2">Truck ID: {truck.truckId}</div>
