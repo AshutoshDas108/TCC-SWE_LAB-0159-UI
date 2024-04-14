@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Offices = () => {
@@ -11,6 +12,9 @@ const Offices = () => {
     isHeadOffice: false,
     loc: "",
   });
+
+  const user = useSelector((state) => state.user.user);
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
 
   //function to handle action when we press save :
 
@@ -88,7 +92,7 @@ const Offices = () => {
           >
             <div className="px-6 py-4">
               <div className="font-bold text-xl mb-2">
-              <Link className="hover:text-red-600" to={`/offices/${branch.branchId}`}>{branch.loc}</Link>
+              <Link className="hover:text-red-600" to={(user.role === 'ROL_MANAGER') ? `/offices/${branch.branchId}` : `/offices`}>{branch.loc}</Link>
               </div>
               <p className="text-gray-700">Branch ID: {branch.branchId}</p>
               <p className="text-gray-700">
@@ -102,7 +106,7 @@ const Offices = () => {
       <div className="text-center">
         {/* Add new office button */}
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => (user.role === 'ROLE_MANAGER')?setShowForm(true):alert("NOT AUTHORIZED")}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
         >
           Add New Office
@@ -110,7 +114,8 @@ const Offices = () => {
       </div>
 
       {/* New office form popup */}
-      {showForm && (
+      {showForm && 
+      (
         <div className="fixed z-10 inset-0 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div

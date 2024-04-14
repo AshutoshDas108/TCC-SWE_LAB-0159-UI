@@ -13,7 +13,7 @@ function AllEmployees() {
         }
         console.log(jwtToken);
         const response = await fetch(
-          "http://localhost:8070/admin/api/employees",
+          "http://localhost:8070/api/employees",
           {
             method: "GET",
             headers: {

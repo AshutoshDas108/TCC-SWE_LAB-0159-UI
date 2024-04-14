@@ -1,9 +1,16 @@
 import React, { useState } from "react";
 import { FaTruck, FaBuilding, FaMapMarkerAlt, FaBox } from "react-icons/fa";
 import { BiCube } from "react-icons/bi";
-import { MdOutlineLocalShipping, MdOutlineBusinessCenter } from "react-icons/md";
-import { IoIosCheckmarkCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
+import {
+  MdOutlineLocalShipping,
+  MdOutlineBusinessCenter,
+} from "react-icons/md";
+import {
+  IoIosCheckmarkCircleOutline,
+  IoIosCloseCircleOutline,
+} from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function ConsignmentCard({ consignment, fetchConsignments }) {
   const [showAssignOfficePopup, setShowAssignOfficePopup] = useState(false);
@@ -11,71 +18,86 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
   const [deliveryStatus, setDeliveryStatus] = useState(consignment.isDelivered);
   //const [generateBill, setGenerateBill] = useState(true)
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   // console.log(consignment.isDelivered)
   // console.log(consignment.consignmentId)
   // const [formData, setFormData] = useState({
   //   isDelivered : false,
   // })
 
+  const user = useSelector((state) => state.user.user);
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+
   const handleCreateAndRedirectToBill = async () => {
     const jwtToken = localStorage.getItem("jwt");
 
-    try {
-      // Call to create a new bill
-      const response = await fetch(`http://localhost:8070/admin/api/consignments/cost/${consignment.consignmentId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
+    if (user.role === "ROLE_MANAGER") {
+      try {
+        // Call to create a new bill
+        const response = await fetch(
+          `http://localhost:8070/admin/api/consignments/cost/${consignment.consignmentId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${jwtToken}`,
+            },
+          }
+        );
 
-      if (!response.ok) {
-        throw new Error('Failed to create bill');
+        if (!response.ok) {
+          throw new Error("Failed to create bill");
+        }
+
+        // Optionally fetch new data or update local state
+        fetchConsignments();
+        //setGenerateBill(false);
+
+        // Redirect to the bill generation page
+        navigate(`/bills`);
+      } catch (error) {
+        console.error("Error creating bill:", error);
       }
-
-      // Optionally fetch new data or update local state
-      fetchConsignments();
-      //setGenerateBill(false);
-
-      // Redirect to the bill generation page
-      navigate(`/bills`);
-    } catch (error) {
-      console.error("Error creating bill:", error);
+    } else {
+      alert("NOT AUTHORIZED");
     }
   };
 
   const handleAssignOffice = async (e) => {
     e.preventDefault();
     // Call API to assign office here
-    try {
-      const jwtToken = localStorage.getItem("jwt");
-      // Send new consignment data to the backend
-      await fetch(
-        `http://localhost:8070/admin/api/consignments/assign-office/${
-          consignment.consignmentId ? consignment.consignmentId : null
-        }/${branchId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${jwtToken}`,
-          },
-          //body: JSON.stringify(formData),
-        }
-      );
+    if (user.role === "ROLE_MANAGER") {
+      try {
+        const jwtToken = localStorage.getItem("jwt");
+        // Send new consignment data to the backend
+        await fetch(
+          `http://localhost:8070/admin/api/consignments/assign-office/${
+            consignment.consignmentId ? consignment.consignmentId : null
+          }/${branchId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${jwtToken}`,
+            },
+            //body: JSON.stringify(formData),
+          }
+        );
 
-      setShowAssignOfficePopup(false);
-      fetchConsignments();
-    } catch (error) {
-      console.error("Error adding consignment:", error);
+        setShowAssignOfficePopup(false);
+        fetchConsignments();
+      } catch (error) {
+        console.error("Error adding consignment:", error);
+      }
+    } else {
+      alert("NOT AUTHORIZED");
     }
   };
 
   const handleAssignTruck = async (e) => {
     e.preventDefault();
     // Call API to assign office here
+    if( user.role === 'ROLE_MANAGER'){
     try {
       const jwtToken = localStorage.getItem("jwt");
       // Send new consignment data to the backend
@@ -96,49 +118,55 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
     } catch (error) {
       console.error("Error adding consignment:", error);
     }
+  }
+  else{
+    alert("NOT AUTHORIZED");
+  }
   };
 
   const handleDeliveryStatus = async (e) => {
     e.preventDefault();
-    try {
-      const jwtToken = localStorage.getItem("jwt");
-      // Calling API to update the delivery status
-      console.log(consignment.consignmentId);
-      const response = await fetch(
-        `http://localhost:8070/admin/api/consignments/update/${consignment.consignmentId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${jwtToken}`,
-          },
-          body: JSON.stringify({}),
+    if (user.role === "ROLE_MANAGER") {
+      try {
+        const jwtToken = localStorage.getItem("jwt");
+        // Calling API to update the delivery status
+        console.log(consignment.consignmentId);
+        const response = await fetch(
+          `http://localhost:8070/admin/api/consignments/update/${consignment.consignmentId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${jwtToken}`,
+            },
+            body: JSON.stringify({}),
+          }
+        );
+
+        if (response.ok) {
+          // Assuming the API returns the updated consignment data
+          // This step may vary depending on how your backend is implemented
+          const updatedConsignment = await response.json();
+
+          //toggle the delivery status
+          setDeliveryStatus(updatedConsignment.isDelivered);
+
+          // Update the local state or trigger a re-fetch here sice we are keeping a list of consignments we nneed this step
+          fetchConsignments();
+
+          return updatedConsignment;
+        } else {
+          throw new Error("Failed to update delivery status");
         }
-      );
-
-      if (response.ok) {
-        // Assuming the API returns the updated consignment data
-        // This step may vary depending on how your backend is implemented
-        const updatedConsignment = await response.json();
-
-        //toggle the delivery status
-        setDeliveryStatus(updatedConsignment.isDelivered);
-
-        // Update the local state or trigger a re-fetch here sice we are keeping a list of consignments we nneed this step
-        fetchConsignments();
-
-        return updatedConsignment;
-      } else {
-        throw new Error("Failed to update delivery status");
+      } catch (error) {
+        console.error("Error updating delivery status:", error);
       }
-    } catch (error) {
-      console.error("Error updating delivery status:", error);
+    } else {
+      alert("NOT AUTHORIZED");
     }
   };
 
   return (
-
-
     <>
       <div className="max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 m-4">
         {/* Existing card content */}
@@ -172,6 +200,7 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
                 ? "N/A"
                 : consignment.branchOffice.branchId}
             </p>
+
             <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
               Delivery Status:{" "}
               {deliveryStatus == true ? (
@@ -206,7 +235,7 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
           {consignment.branchOffice == null && (
             <>
               <button
-                onClick={() => setShowAssignOfficePopup(true)}
+                onClick={() => { (user.role === "ROLE_MANAGER")? setShowAssignOfficePopup(true) : alert("NOT AUTHORIZED")}}
                 className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
               >
                 Assign Office
@@ -247,12 +276,14 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
               )}
             </>
           )}
-          {!consignment.isBillGenerated && <button
-          onClick={handleCreateAndRedirectToBill}
-          className="bg-red-500 hover:bg-red-700 text-white font-bold p-2 rounded focus:outline-none focus:shadow-outline transition-colors duration-200"
-        >
-          Generate Bill
-        </button> }
+          {!consignment.isBillGenerated && (
+            <button
+              onClick={handleCreateAndRedirectToBill}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold p-2 rounded focus:outline-none focus:shadow-outline transition-colors duration-200"
+            >
+              Generate Bill
+            </button>
+          )}
         </div>
       </div>
     </>
@@ -260,10 +291,6 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
 }
 
 export default ConsignmentCard;
-
-
-
-
 
 /*
 

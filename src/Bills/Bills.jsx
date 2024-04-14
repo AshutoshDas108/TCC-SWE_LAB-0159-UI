@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';  
 import BillCards from './BillCrads';
+import { useSelector } from 'react-redux';
 
 function Bills() {
   const [bills, setBills] = useState([]);
 
+
+  const user = useSelector((state) => state.user.user);
+
+
   const fetchBills = async () => {
     const jwtToken = localStorage.getItem("jwt")
+    if(user.role === 'ROLE_MANAGER') {
     try {
       const response = await fetch(`http://localhost:8070/admin/api/bills`, {
           method: "GET",
@@ -29,6 +35,10 @@ function Bills() {
     } catch (error) {
       console.error("Failed to fetch bills:", error);
     }
+  }
+  else{
+    alert("NOT AUTHORIZED")
+  }
   };
 
   useEffect(() => {
@@ -41,7 +51,7 @@ function Bills() {
           List Of Bills
         </h2>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-      {(bills.length ==0)?`NO BILLS AVAILABLE CURRENTLY`:  bills.map(bill => (
+      {(bills.length ==0)?(<p className='flex items-center justify-center font-bold text-2xl bg-gradient-to-r from-white to-blue-400 text-slate-800'>NO BILLS AVAILABLE</p>):  bills.map(bill => (
         <BillCards key={bill.billId} bill={bill} />
       ))}
     </div>

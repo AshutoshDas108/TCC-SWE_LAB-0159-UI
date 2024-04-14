@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ConsignmentCard from "./ConsignmentCard";
+import { useSelector } from "react-redux";
 
 function Consignments() {
   const [consignments, setConsignments] = useState([]);
@@ -15,6 +16,9 @@ function Consignments() {
     volume: "",
   });
 
+
+  const user = useSelector((state) => state.user.user);
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
   
   useEffect(() => {
     fetchConsignments();
@@ -44,6 +48,7 @@ function Consignments() {
   };
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
     try {
       const jwtToken = localStorage.getItem("jwt");
@@ -100,14 +105,15 @@ function Consignments() {
       <div className="text-center ">
         {/* Add new office button */}
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => (user.role === 'ROLE_MANAGER')?setShowForm(true):alert("NOT AUTHORIZED")}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
         >
           Add New Consignment
         </button>
       </div>
 
-      {showForm && (
+      {showForm && 
+      (
         <div className="mt-4 flex justify-center">
           <form onSubmit={handleSubmit} className="w-full max-w-lg">
             <div className="flex flex-wrap -mx-3 mb-6">
@@ -237,7 +243,8 @@ function Consignments() {
             </div>
           </form>
         </div>
-      )}
+      )
+     }
     </div>
   );
 }

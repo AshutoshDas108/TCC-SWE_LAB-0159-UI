@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AuthService from "../../apis/auth";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function Register() {
   const [empName, setempName] = useState("");
@@ -10,16 +11,19 @@ function Register() {
 
   const navigate = useNavigate();
 
+  const user = useSelector(state => state.user.user)
+
   const handleSubmit = async (e) => {
-    // registration logic here
 
     e.preventDefault();
+
+    if(user.role === 'ROLE_MANAGER'){
     try {
       const userData = { empName, email, password, userRole };
       const response = await AuthService.signUp(userData);
       console.log("Registration successful:", response);
 
-      // Optionally, you can redirect the user to another page upon successful registration
+      //NAVIGATE TO LOGIN PAGE ON SUCCESSFUL REGISTRATION
       navigate("/login");
     } catch (error) {
       console.error("Registration failed:", error.message);
@@ -29,6 +33,13 @@ function Register() {
     console.log("Email:", email);
     console.log("Password:", password);
     console.log("Role:", userRole);
+    }
+    else{
+      alert("NOT AUTHORIZED");
+    }
+  
+  
+
   };
 
   return (
@@ -91,34 +102,7 @@ function Register() {
                   placeholder="Password"
                 />
               </div>
-              {/* <div>
-              <label htmlFor="confirm-password" className="sr-only">Confirm Password</label>
-              <input
-                id="confirm-password"
-                name="confirm-password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Confirm Password"
-              />
-            </div> */}
-              {/* <div className='space-y-2'>
-              <label htmlFor="role" className="sr-only">Role</label>
-              <input
-                id="role"
-                name="role"
-                type="text"
-                required
-                value={userRole}
-                onChange={(e) => setUserRole(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Role"
-              />
-            </div> */}
-
+              
               <div className="space-y-2">
                 <label
                   htmlFor="role"
@@ -143,6 +127,7 @@ function Register() {
             <div>
               <button
                 type="submit"
+                onClick={()=>(user.role === 'ROLE_ITSTAFF') && alert("NOT AUTHORIZED")}
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Register

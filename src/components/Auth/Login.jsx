@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import {useNavigate } from "react-router-dom"
 import AuthService from '../../apis/auth';
+import { login } from '../../redux/userSlice';
+import { useDispatch } from 'react-redux';
 
 function Login() {
 
@@ -8,6 +10,7 @@ function Login() {
   const [password, setPassword] = useState('');
 
   const navigate =useNavigate()
+  const dispatch = useDispatch()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,7 +19,9 @@ function Login() {
       const response = await AuthService.logIn(userData);
       console.log('Logged in successfully:', response);
 
-      // Optionally, you can redirect the user to another page upon successful registration
+      dispatch(login(response)); 
+
+      //  redirect the user to home page upon successful registration
       navigate('/')
     console.log('Email:', email);
     console.log('Password:', password);

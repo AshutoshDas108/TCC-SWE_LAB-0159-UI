@@ -60,7 +60,7 @@ function OfficeDetails() {
     <div className="flex items-center justify-center bg-gradient-to-r h-full w-full  from-blue-100 to-blue-700">
       
     <div className="max-w-lg  h-full w-full">
-   
+      
       <BranchDetails branch={office}/>
       <EmployeeDetails employees={office.employees}/>
       <TruckDetails trucks={ office.trucks}/>
