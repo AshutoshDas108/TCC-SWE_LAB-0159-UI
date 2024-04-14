@@ -7,7 +7,7 @@ function Home() {
   return (
     
     <div className='bg-gradient-to-r from-white to-blue-600 shadow-xl'>
-      <div className='text-4xl bg-slate-700 text-white text-center font-bold p-4'>
+      <div className='text-4xl bg-gradient-to-r from-slate-500 to-slate-800 shadow-xl text-white text-center font-bold p-4'>
         Welcome To Indian Goods Transport Company</div>
 
         <div className="mx-auto w-full max-w-7xl">

@@ -84,11 +84,11 @@ const Offices = () => {
         {branchOffices.map((branch) => (
           <div
             key={branch.branchId}
-            className="bg-white rounded-lg overflow-hidden shadow-md"
+            className="bg-gradient-to-r from-white to-blue-300 shadow-xl rounded-lg overflow-hidden"
           >
             <div className="px-6 py-4">
               <div className="font-bold text-xl mb-2">
-              <Link to={`/offices/${branch.branchId}`}>{branch.loc}</Link>
+              <Link className="hover:text-red-600" to={`/offices/${branch.branchId}`}>{branch.loc}</Link>
               </div>
               <p className="text-gray-700">Branch ID: {branch.branchId}</p>
               <p className="text-gray-700">

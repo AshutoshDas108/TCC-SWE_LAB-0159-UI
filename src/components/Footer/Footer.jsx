@@ -5,7 +5,7 @@ function Footer() {
   return (
     <div>
 
-<footer className=" bg-gradient-to-r from-white to-blue-400 shadow-xl border-y">
+<footer className=" bg-gradient-to-r from-white to-blue-600 shadow-xl border-y">
             <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
                 <div className="md:flex md:justify-between">
                     <div className="mb-6 md:mb-0">
