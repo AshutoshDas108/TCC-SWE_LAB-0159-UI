@@ -87,6 +87,7 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
         setShowAssignOfficePopup(false);
         fetchConsignments();
       } catch (error) {
+  
         console.error("Error adding consignment:", error);
       }
     } else {
