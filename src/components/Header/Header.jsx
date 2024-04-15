@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../../redux/userSlice";
@@ -7,12 +7,16 @@ function Header() {
   const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
   const user = useSelector((state) => state.user.user);
 
+ // const [logInState, setLogInState] = useState(isLoggedIn)
+
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+
   const handleLogout = () =>{
-    dispatch(logout());
+    dispatch(logout);
     localStorage.clear();
+    //setLogInState(isLoggedIn);
     navigate('/')
   }
 
