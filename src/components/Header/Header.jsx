@@ -7,18 +7,20 @@ function Header() {
   const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
   const user = useSelector((state) => state.user.user);
 
- // const [logInState, setLogInState] = useState(isLoggedIn)
+  // const [logInState, setLogInState] = useState(isLoggedIn)
 
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-
-  const handleLogout = () =>{
-    dispatch(logout);
+  const handleLogout = () => {
+    dispatch(() => {
+      logout();
+    });
     localStorage.clear();
-    //setLogInState(isLoggedIn);
-    navigate('/')
-  }
+    navigate("/login");
+  };
+
+  useEffect(() => {}, [isLoggedIn]);
 
   return (
     <div>
@@ -42,8 +44,10 @@ function Header() {
                 </Link>
               )}
               {isLoggedIn && (
-                <button className="text-center m-4 bg-orange-700 hover:bg-orange-500 focus:ring-4 focus:ring-gray-300 rounded-lg px-4 py-2 text-sm font-semibold text-white"
-                onClick={handleLogout}>
+                <button
+                  className="text-center m-4 bg-orange-700 hover:bg-orange-500 focus:ring-4 focus:ring-gray-300 rounded-lg px-4 py-2 text-sm font-semibold text-white"
+                  onClick={handleLogout}
+                >
                   LogOut
                 </button>
               )}

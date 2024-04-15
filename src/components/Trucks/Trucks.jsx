@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const Trucks = () => {
@@ -13,6 +13,8 @@ const Trucks = () => {
 
   const user = useSelector((state) => state.user.user);
   const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTrucks();
@@ -107,7 +109,7 @@ const Trucks = () => {
         <div className="text-center">
           {/* Add new office button */}
           <button
-            onClick={() => (user.role === 'ROLE_MANAGER')? setShowForm(true) : alert("NOT AUTHORIZED")}
+            onClick={() => (user.role === 'ROLE_MANAGER')? setShowForm(true) : navigate('/error')}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
           >
             Add New Truck

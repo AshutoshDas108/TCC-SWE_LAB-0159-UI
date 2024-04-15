@@ -59,7 +59,7 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
         console.error("Error creating bill:", error);
       }
     } else {
-      alert("NOT AUTHORIZED");
+      navigate('/error')
     }
   };
 
@@ -91,7 +91,7 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
         console.error("Error adding consignment:", error);
       }
     } else {
-      alert("NOT AUTHORIZED");
+      navigate('/error')
     }
   };
 
@@ -121,7 +121,7 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
     }
   }
   else{
-    alert("NOT AUTHORIZED");
+    navigate('/error')
   }
   };
 
@@ -163,7 +163,7 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
         console.error("Error updating delivery status:", error);
       }
     } else {
-      alert("NOT AUTHORIZED");
+      navigate('/error')
     }
   };
 

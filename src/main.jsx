@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
 import './index.css'
 import {RouterProvider, createBrowserRouter, createRoutesFromElements, Route} from 'react-router-dom'
 import Home from "./components/Home/Home.jsx";
@@ -14,11 +13,11 @@ import AllEmployees from './components/Employee/AllEmployees.jsx'
 import EmployeeDetail from './components/Employee/EmployeeDetails.jsx'
 import Offices from './components/Offices/Offices.jsx'
 import OfficeDetails from './components/Offices/OfficeDetails.jsx'
-import TruckDetails from './components/Offices/InternalOfficeDetails/TruckDetails.jsx'
 import TruckDetail from './components/Trucks/TruckDetail.jsx'
 import Bills from './Bills/Bills.jsx'
 import { Provider } from 'react-redux'
 import { store } from './redux/store.jsx'
+import ErrorPage from './ErrorPages/ErrorPage.jsx'
 
 
 const router = createBrowserRouter(
@@ -37,6 +36,7 @@ const router = createBrowserRouter(
           <Route path='offices' element={<Offices/>} />
           <Route path='offices/:id' element={<OfficeDetails/>} />
           <Route path='consignments' element={<Consignments/>}/>
+          <Route path='/error' element={<ErrorPage/>} />
       </Route>
   )
 )

@@ -92,7 +92,7 @@ const Offices = () => {
           >
             <div className="px-6 py-4">
               <div className="font-bold text-xl mb-2">
-              <Link className="hover:text-red-600" to={(user.role === 'ROLE_MANAGER') ? `/offices/${branch.branchId}` : `/offices`}>{branch.loc}</Link>
+              <Link className="hover:text-red-600" to={(user.role === 'ROLE_MANAGER') ? `/offices/${branch.branchId}` : `/error`}>{branch.loc}</Link>
               </div>
               <p className="text-gray-700">Branch ID: {branch.branchId}</p>
               <p className="text-gray-700">

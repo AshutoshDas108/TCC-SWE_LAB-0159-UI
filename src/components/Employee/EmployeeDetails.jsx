@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 
 const EmployeeDetail = () => {
@@ -11,8 +11,10 @@ const EmployeeDetail = () => {
   const [isAssigning, setIsAssigning] = useState(false);
   const [currentOfficeId, setCurrentOfficeId] = useState(null);
 
+  const navigate = useNavigate()
+
   const handleAssignClick = () => {
-    setIsAssigning(true);
+    (employee.userRole === 'ROLE_MANAGER')?setIsAssigning(true):navigate('/error');
   };
 
   const fetchData = async () => {
