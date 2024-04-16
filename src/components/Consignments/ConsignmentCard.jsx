@@ -1,14 +1,4 @@
 import React, { useState } from "react";
-import { FaTruck, FaBuilding, FaMapMarkerAlt, FaBox } from "react-icons/fa";
-import { BiCube } from "react-icons/bi";
-import {
-  MdOutlineLocalShipping,
-  MdOutlineBusinessCenter,
-} from "react-icons/md";
-import {
-  IoIosCheckmarkCircleOutline,
-  IoIosCloseCircleOutline,
-} from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -59,7 +49,8 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
         console.error("Error creating bill:", error);
       }
     } else {
-      navigate('/error')
+      //navigate("/error");
+    alert("NOT AUTHORIZED TO USE THIS FEATURE"); 
     }
   };
 
@@ -87,42 +78,42 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
         setShowAssignOfficePopup(false);
         fetchConsignments();
       } catch (error) {
-  
         console.error("Error adding consignment:", error);
       }
     } else {
-      navigate('/error')
+     // navigate("/error");
+     alert("NOT AUTHORIZED TO USE THIS FEATURE"); 
     }
   };
 
   const handleAssignTruck = async (e) => {
     e.preventDefault();
     // Call API to assign office here
-    if( user.role === 'ROLE_MANAGER'){
-    try {
-      const jwtToken = localStorage.getItem("jwt");
-      // Send new consignment data to the backend
-      await fetch(
-        `http://localhost:8070/admin/api/consignments/assign-truck/${consignment.consignmentId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${jwtToken}`,
-          },
-          //body: JSON.stringify(formData),
-        }
-      );
+    if (user.role === "ROLE_MANAGER") {
+      try {
+        const jwtToken = localStorage.getItem("jwt");
+        // Send new consignment data to the backend
+        await fetch(
+          `http://localhost:8070/admin/api/consignments/assign-truck/${consignment.consignmentId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${jwtToken}`,
+            },
+            //body: JSON.stringify(formData),
+          }
+        );
 
-      setShowAssignOfficePopup(false);
-      fetchConsignments();
-    } catch (error) {
-      console.error("Error adding consignment:", error);
+        setShowAssignOfficePopup(false);
+        fetchConsignments();
+      } catch (error) {
+        console.error("Error adding consignment:", error);
+      }
+    } else {
+     // navigate("/error");
+     alert("NOT AUTHORIZED TO USE THIS FEATURE"); 
     }
-  }
-  else{
-    navigate('/error')
-  }
   };
 
   const handleDeliveryStatus = async (e) => {
@@ -163,7 +154,8 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
         console.error("Error updating delivery status:", error);
       }
     } else {
-      navigate('/error')
+      //navigate("/error");
+      alert("NOT AUTHORIZED TO USE THIS FEATURE"); 
     }
   };
 
@@ -236,7 +228,11 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
           {consignment.branchOffice == null && (
             <>
               <button
-                onClick={() => { (user.role === "ROLE_MANAGER")? setShowAssignOfficePopup(true) : alert("NOT AUTHORIZED")}}
+                onClick={() => {
+                  user.role === "ROLE_MANAGER"
+                    ? setShowAssignOfficePopup(true)
+                    : alert("NOT AUTHORIZED TO USE THIS FEATURE");
+                }}
                 className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
               >
                 Assign Office

@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 
 
 const EmployeeDetail = () => {
   const [employee, setEmployee] = useState(null);
   const { id } = useParams();
-  console.log(id);
+  console.log(id)
   console.log(typeof id);
 
+  const user = useSelector(state => state.user.user)
+
   const [isAssigning, setIsAssigning] = useState(false);
-  const [currentOfficeId, setCurrentOfficeId] = useState(null);
+ 
 
   const navigate = useNavigate()
 
   const handleAssignClick = () => {
-    (employee.userRole === 'ROLE_MANAGER')?setIsAssigning(true):navigate('/error');
+    (user.role === 'ROLE_MANAGER')?setIsAssigning(true):navigate('/error');
   };
 
   const fetchData = async () => {

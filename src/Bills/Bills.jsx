@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';  
 import BillCards from './BillCrads';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 function Bills() {
   const [bills, setBills] = useState([]);
 
 
   const user = useSelector((state) => state.user.user);
+  const navigate = useNavigate()
 
 
   const fetchBills = async () => {
@@ -37,7 +39,8 @@ function Bills() {
     }
   }
   else{
-    alert("NOT AUTHORIZED")
+    // alert("NOT AUTHORIZED")
+    navigate('/error')
   }
   };
 
