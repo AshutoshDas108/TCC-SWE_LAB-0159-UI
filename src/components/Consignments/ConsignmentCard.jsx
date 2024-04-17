@@ -6,24 +6,43 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
   const [showAssignOfficePopup, setShowAssignOfficePopup] = useState(false);
   const [branchId, setBranchId] = useState("");
   const [deliveryStatus, setDeliveryStatus] = useState(consignment.isDelivered);
-  //const [generateBill, setGenerateBill] = useState(true)
 
   const navigate = useNavigate();
-  // console.log(consignment.isDelivered)
-  // console.log(consignment.consignmentId)
-  // const [formData, setFormData] = useState({
-  //   isDelivered : false,
-  // })
-
   const user = useSelector((state) => state.user.user);
-  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+
+  const handleDeleteConsignment = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this consignment?"
+    );
+    if (confirmDelete) {
+      try {
+        const jwtToken = localStorage.getItem("jwt");
+        const response = await fetch(
+          `http://localhost:8070/admin/api/consignments/delete/${consignment.consignmentId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          fetchConsignments();
+        } else {
+          throw new Error("Failed to delete the consignment");
+        }
+      } catch (error) {
+        console.error("Error deleting consignment:", error);
+      }
+    }
+  };
 
   const handleCreateAndRedirectToBill = async () => {
     const jwtToken = localStorage.getItem("jwt");
 
     if (user.role === "ROLE_MANAGER") {
       try {
-        // Call to create a new bill
         const response = await fetch(
           `http://localhost:8070/admin/api/consignments/cost/${consignment.consignmentId}`,
           {
@@ -35,55 +54,76 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
           }
         );
 
-        if (!response.ok) {
+        if (response.ok) {
+          navigate(`/bills`);
+          fetchConsignments();
+        } else {
           throw new Error("Failed to create bill");
         }
-
-        // Optionally fetch new data or update local state
-        fetchConsignments();
-        //setGenerateBill(false);
-
-        // Redirect to the bill generation page
-        navigate(`/bills`);
       } catch (error) {
         console.error("Error creating bill:", error);
       }
     } else {
-      //navigate("/error");
-    alert("NOT AUTHORIZED TO USE THIS FEATURE"); 
+      alert("NOT AUTHORIZED TO USE THIS FEATURE");
     }
   };
 
   const handleAssignOffice = async (e) => {
     e.preventDefault();
-    // Call API to assign office here
     if (user.role === "ROLE_MANAGER") {
       try {
         const jwtToken = localStorage.getItem("jwt");
-        // Send new consignment data to the backend
         await fetch(
-          `http://localhost:8070/admin/api/consignments/assign-office/${
-            consignment.consignmentId ? consignment.consignmentId : null
-          }/${branchId}`,
+          `http://localhost:8070/admin/api/consignments/assign-office/${consignment.consignmentId}/${branchId}`,
           {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${jwtToken}`,
             },
-            //body: JSON.stringify(formData),
           }
         );
 
         setShowAssignOfficePopup(false);
         fetchConsignments();
       } catch (error) {
-        console.error("Error adding consignment:", error);
+        console.error("Error assigning office:", error);
       }
     } else {
-     // navigate("/error");
-     alert("NOT AUTHORIZED TO USE THIS FEATURE"); 
+      alert("NOT AUTHORIZED TO USE THIS FEATURE");
     }
+  };
+
+  const toggleDeliveryStatus = async () => {
+    if(user.role === "ROLE_MANAGER") {
+    const newStatus = !deliveryStatus;
+    try {
+      const jwtToken = localStorage.getItem("jwt");
+      const response = await fetch(
+        `http://localhost:8070/admin/api/consignments/update/${consignment.consignmentId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${jwtToken}`,
+          },
+          body: JSON.stringify({ isDelivered: newStatus }),
+        }
+      );
+
+      if (response.ok) {
+        setDeliveryStatus(newStatus);
+        fetchConsignments();
+      } else {
+        throw new Error("Failed to update delivery status");
+      }
+    } catch (error) {
+      console.error("Error updating delivery status:", error);
+    }
+  }
+  else{
+  alert("NOT AUTHORIZED");
+  }
   };
 
   const handleAssignTruck = async (e) => {
@@ -111,238 +151,114 @@ function ConsignmentCard({ consignment, fetchConsignments }) {
         console.error("Error adding consignment:", error);
       }
     } else {
-     // navigate("/error");
-     alert("NOT AUTHORIZED TO USE THIS FEATURE"); 
-    }
-  };
-
-  const handleDeliveryStatus = async (e) => {
-    e.preventDefault();
-    if (user.role === "ROLE_MANAGER") {
-      try {
-        const jwtToken = localStorage.getItem("jwt");
-        // Calling API to update the delivery status
-        console.log(consignment.consignmentId);
-        const response = await fetch(
-          `http://localhost:8070/admin/api/consignments/update/${consignment.consignmentId}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${jwtToken}`,
-            },
-            body: JSON.stringify({}),
-          }
-        );
-
-        if (response.ok) {
-          // Assuming the API returns the updated consignment data
-          // This step may vary depending on how your backend is implemented
-          const updatedConsignment = await response.json();
-
-          //toggle the delivery status
-          setDeliveryStatus(updatedConsignment.isDelivered);
-
-          // Update the local state or trigger a re-fetch here sice we are keeping a list of consignments we nneed this step
-          fetchConsignments();
-
-          return updatedConsignment;
-        } else {
-          throw new Error("Failed to update delivery status");
-        }
-      } catch (error) {
-        console.error("Error updating delivery status:", error);
-      }
-    } else {
-      //navigate("/error");
-      alert("NOT AUTHORIZED TO USE THIS FEATURE"); 
+      // navigate("/error");
+      alert("NOT AUTHORIZED TO USE THIS FEATURE");
     }
   };
 
   return (
-    <>
-      <div className="max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 m-4">
-        {/* Existing card content */}
-        <div className="max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 m-4">
-          <div className="p-5">
-            <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-              {consignment.senderName}
-            </h5>
-            <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
-              Sender Address: {consignment.senderAddress}
-            </p>
-            <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-              {consignment.receiverName}
-            </h5>
-            <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
-              Receiver Address: {consignment.receiverAddress}
-            </p>
-            <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
-              Distance: {consignment.distanceBwSenderReceiver} km
-            </p>
-            <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
-              Volume: {consignment.volume} cubic meters
-            </p>
-            <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
-              Assigned Truck ID:{" "}
-              {consignment.truck == null ? "N/A" : consignment.truck.truckId}
-            </p>
-            <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
-              Assigned Office ID:{" "}
-              {consignment.branchOffice == null
-                ? "N/A"
-                : consignment.branchOffice.branchId}
-            </p>
-
-            <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
-              Delivery Status:{" "}
-              {deliveryStatus == true ? (
-                <button
-                  onClick={handleDeliveryStatus}
-                  className="text-green-600 font-bold"
-                >
-                  Deliverd
-                </button>
-              ) : (
-                <button
-                  onClick={handleDeliveryStatus}
-                  className="text-red-600 font-bold"
-                >
-                  Not Deliverd
-                </button>
-              )}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex justify-between">
-          {consignment.truck == null && (
-            <button
-              onClick={handleAssignTruck}
-              className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Assign Truck
-            </button>
-          )}
-
-          {consignment.branchOffice == null && (
-            <>
-              <button
-                onClick={() => {
-                  user.role === "ROLE_MANAGER"
-                    ? setShowAssignOfficePopup(true)
-                    : alert("NOT AUTHORIZED TO USE THIS FEATURE");
-                }}
-                className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Assign Office
-              </button>
-
-              {showAssignOfficePopup && (
-                <div
-                  className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
-                  id="my-modal"
-                >
-                  <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                    <h3 className="text-lg font-bold text-gray-900">
-                      Assign Office
-                    </h3>
-                    <input
-                      type="text"
-                      placeholder="Branch ID"
-                      value={branchId}
-                      onChange={(e) => setBranchId(e.target.value)}
-                      className="mt-2 mb-4 p-2 w-full border rounded"
-                    />
-                    <div className="flex justify-end space-x-4">
-                      <button
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={() => setShowAssignOfficePopup(false)}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={handleAssignOffice}
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
+    <div className="relative max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 m-4">
+      <button
+        onClick={ ()=> { (user.role === 'ROLE_MANAGER') ? handleDeleteConsignment() : alert("NOT AUTHORIZED TO USE THIS FEATURE") }}
+        className="absolute top-0 right-0 p-2 text-white bg-red-600 hover:bg-red-700 rounded-bl-lg"
+      >
+        X
+      </button>
+      <div className="p-5">
+        <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+          {consignment.senderName}
+        </h5>
+        <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
+          Sender Address: {consignment.senderAddress}
+        </p>
+        <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+          {consignment.receiverName}
+        </h5>
+        <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
+          Receiver Address: {consignment.receiverAddress}
+        </p>
+        <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
+          Distance: {consignment.distanceBwSenderReceiver}km
+        </p>
+        <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
+          Volume: {consignment.volume} cubic meters
+        </p>
+        <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
+          Assigned Truck ID:{" "}
+          {consignment.truck == null ? "N/A" : consignment.truck.truckId}
+        </p>
+        <p className="mb-3 font-bold text-gray-700 dark:text-gray-400">
+          Assigned Office ID:{" "}
+          {consignment.branchOffice == null
+            ? "N/A"
+            : consignment.branchOffice.branchId}
+        </p>
+        <p className="mb-3 flex items-center font-bold text-gray-700 dark:text-gray-400">
+          Is Delivered:
+          <button
+            onClick={toggleDeliveryStatus}
+            className={`ml-2 text-sm px-3 py-1 rounded-lg ${
+              deliveryStatus
+                ? "text-green-700 bg-green-200 hover:bg-green-300"
+                : "text-red-700 bg-red-200 hover:bg-red-300"
+            }`}
+          >
+            {deliveryStatus ? "Delivered" : "NOT delivered"}
+          </button>
+        </p>
+        <div className="flex justify-between items-center">
           {!consignment.isBillGenerated && (
             <button
               onClick={handleCreateAndRedirectToBill}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold p-2 rounded focus:outline-none focus:shadow-outline transition-colors duration-200"
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2"
             >
               Generate Bill
             </button>
           )}
+          {consignment.branchOffice == null && (
+            <button
+              onClick={() => (user.role === 'ROLE_MANAGER')? setShowAssignOfficePopup(true): alert("NOT AUTHORIZED")}
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2"
+            >
+              Assign Office
+            </button>
+          )}
+          {consignment.truck == null && (
+            <button
+              onClick={handleAssignTruck}
+              className="text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5"
+            >
+              Assign Truck
+            </button>
+          )}
         </div>
       </div>
-    </>
+      {showAssignOfficePopup && (
+        <form onSubmit={handleAssignOffice} className="p-4">
+          <input
+            type="text"
+            placeholder="Enter Branch ID"
+            value={branchId}
+            onChange={(e) => setBranchId(e.target.value)}
+            className="text-black border border-gray-300 rounded-lg p-2"
+          />
+
+          <button
+            type="submit"
+            className="ml-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
+          >
+            Assign
+          </button>
+          <button
+            onClick={() => setShowAssignOfficePopup(false)}
+            className="ml-2 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5"
+          >
+            Cancel
+          </button>
+        </form>
+      )}
+    </div>
   );
 }
 
 export default ConsignmentCard;
-
-/*
-
-
-  <div className="max-w-sm bg-gradient-to-r from-white to-blue-200 shadow-xl  rounded-lg border border-gray-300 p-5 m-4 hover:shadow-xl transition-shadow duration-300">
-      <div>
-        <h5 className="text-2xl font-bold text-gray-900 mb-2">
-          {consignment.senderName}
-          <FaMapMarkerAlt className="inline-block ml-2" />
-        </h5>
-        <p className="text-gray-600 flex items-center">
-          <FaBuilding className="mr-2" /> {consignment.senderAddress}
-        </p>
-        <p className="text-gray-600 flex items-center mt-2">
-          <FaTruck className="mr-2" /> {consignment.receiverName}
-        </p>
-        <p className="text-gray-600 flex items-center">
-          <FaMapMarkerAlt className="mr-2" /> {consignment.receiverAddress}
-        </p>
-        <p className="text-gray-600 flex items-center mt-2">
-          <BiCube className="mr-2" /> {consignment.distanceBwSenderReceiver} km
-        </p>
-        <p className="text-gray-600 flex items-center">
-          <MdOutlineLocalShipping className="mr-2" /> Volume: {consignment.volume} m³
-        </p>
-        <p className="text-gray-600 flex items-center">
-          <MdOutlineBusinessCenter className="mr-2" /> Truck ID: {consignment.truck ? consignment.truck.truckId : "N/A"}
-        </p>
-        <p className="text-gray-600 flex items-center">
-          <FaBuilding className="mr-2" /> Office ID: {consignment.branchOffice ? consignment.branchOffice.branchId : "N/A"}
-        </p>
-        <p className="flex items-center mt-4">
-          Delivery Status: 
-          {deliveryStatus ? (
-            <IoIosCheckmarkCircleOutline className="ml-2 text-green-500" size="1.5em" />
-          ) : (
-            <IoIosCloseCircleOutline className="ml-2 text-red-500" size="1.5em" />
-          )}
-        </p>
-      </div>
-      <div className="flex justify-between mt-4">
-        <button
-          onClick={handleDeliveryStatus}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors duration-200"
-        >
-          Update Status
-        </button>
-       {consignment.branchOffice == null && <button
-          onClick={() => setShowAssignOfficePopup(true)}
-          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors duration-200"
-        >
-          Assign Office
-        </button> }
-      </div>
-    </div>
-
-
-*/
